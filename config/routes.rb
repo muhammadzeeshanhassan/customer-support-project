@@ -15,4 +15,8 @@ Rails.application.routes.draw do
     registrations: 'user/registrations',
     sessions:      'user/sessions'
   }
+
+  resources :tickets, controller: 'ticket'
+
+  get '/home' controller: 'pages'
 end

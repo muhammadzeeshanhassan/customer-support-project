@@ -10,7 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_30_104238) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_31_092129) do
+  create_table "tickets", force: :cascade do |t|
+    t.string "subject"
+    t.text "description"
+    t.integer "status"
+    t.integer "priority"
+    t.integer "customer_id", null: false
+    t.integer "agent_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["agent_id"], name: "index_tickets_on_agent_id"
+    t.index ["customer_id"], name: "index_tickets_on_customer_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false

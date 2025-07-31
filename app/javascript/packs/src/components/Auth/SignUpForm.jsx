@@ -42,16 +42,8 @@ export default function SignUpForm({ csrfToken }) {
             )
             window.location.href = '/'
           } catch (err) {
-            const resp = err.response?.data
-            if (resp?.errors) {
-              const formatted = Object.entries(resp.errors).reduce(
-                (acc, [k, msgs]) => ((acc[k] = msgs.join(' ')), acc),
-                {}
-              )
-              setErrors(formatted)
-            } else {
-              setErrors({ general: 'An unexpected error occurred' })
-            }
+            console.error(err)
+            setErrors({ general: 'Could not create user' })
           } finally {
             setSubmitting(false)
           }
