@@ -18,5 +18,6 @@ Rails.application.routes.draw do
 
   resources :tickets, controller: 'ticket'
 
-  get '/home' controller: 'pages'
+  # get '/home', controller: 'pages'
+  root 'pages#home'
 end

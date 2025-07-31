@@ -1,2 +1,8 @@
-<h1>Pages#home</h1>
-<p>Find me in app/views/pages/home.html.erb</p>
+<%= content_for :head do%>
+    <%= javascript_pack_tag 'application'%>
+<% end %>
+
+<div id='react-root'
+    data-page='home_page',
+    data-signed-in="<%= user_signed_in? %>"
+></div>

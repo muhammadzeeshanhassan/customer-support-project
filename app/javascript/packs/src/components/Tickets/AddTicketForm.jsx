@@ -4,7 +4,6 @@ import { Formik, Form, Field, ErrorMessage } from 'formik'
 import axios from 'axios/dist/axios.min.js'
 
 export default function AddTicketForm({ csrfToken }) {
-  // ⚠️ You must return your JSX!
   return (
     <div className="container mt-5" style={{ maxWidth: '480px' }}>
       <h2 className="mb-4 text-center">Create a Ticket</h2>
@@ -24,7 +23,7 @@ export default function AddTicketForm({ csrfToken }) {
         onSubmit={async (values, { setSubmitting, setErrors }) => {
           try {
             await axios.post(
-              '/tickets',                
+              '/tickets/create',                
               { ticket: values },
               {
                 headers: {
