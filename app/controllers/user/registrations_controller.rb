@@ -1,8 +1,4 @@
 class User::RegistrationsController < Devise::RegistrationsController
-  protect_from_forgery with: :null_session
-
-  respond_to :json
-
   def create
     build_resource(sign_up_params)
     if resource.save

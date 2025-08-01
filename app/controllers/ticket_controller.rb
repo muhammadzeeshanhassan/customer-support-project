@@ -1,6 +1,18 @@
 class TicketController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_ticket, only: [:show, :edit, :update, :destroy] 
+  before_action :set_ticket, only: [:show, :edit, :update, :destroy, :assign_ticket, :assign] 
+
+  def assign_ticket
+    if @ticket.update(agent_id: params.dig(:ticket, :agent_id))
+      render json: @ticket, status: :ok
+    else
+      render json: {errors: @ticket.errors}, status: :unprocessable_entity
+    end
+  end
+
+  def assign
+  end
+
 
   def index
     @tickets = if current_user.admin?

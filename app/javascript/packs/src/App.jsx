@@ -6,6 +6,7 @@ import AddTicketForm from './components/Tickets/AddTicketForm'
 import HomePage from './components/Pages/HomePage'
 import Dashboard from './components/Pages/Dashboard'
 import EditTicketForm from './components/Tickets/EditTicketForm'
+import AssignTicketForm from './components/Tickets/AssignTicketForm'
 
 export default function App() {
   const container = document.getElementById('react-root')
@@ -28,6 +29,8 @@ export default function App() {
       return <Dashboard role={role} ticketCount={count} csrfToken={csrfToken} />
     case 'edit_ticket':
       return <EditTicketForm csrfToken={csrfToken} id={ticketId} role={role}/>
+    case 'assign_ticket':
+      return <AssignTicketForm csrfToken={csrfToken} role={role} ticketId={ticketId} onSuccess={() => window.location.reload()}/>
     default:
       return <div>Oops… nothing to render</div>
   }

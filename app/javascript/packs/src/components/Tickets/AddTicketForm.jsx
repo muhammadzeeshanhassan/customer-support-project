@@ -16,21 +16,21 @@ export default function AddTicketForm({ csrfToken }) {
         }}
         validate={values => {
           const errors = {}
-          if (!values.subject)     errors.subject     = 'Required'
+          if (!values.subject) errors.subject = 'Required'
           if (!values.description) errors.description = 'Required'
           return errors
         }}
         onSubmit={async (values, { setSubmitting, setErrors }) => {
           try {
             await axios.post(
-              '/tickets',                
+              '/tickets',
               { ticket: values },
               {
                 headers: {
                   'X-CSRF-Token': csrfToken,
-                  'Content-Type':  'application/json'
+                  'Content-Type': 'application/json'
                 },
-                withCredentials: true    
+                withCredentials: true
               }
             )
             window.location.href = '/dashboard'

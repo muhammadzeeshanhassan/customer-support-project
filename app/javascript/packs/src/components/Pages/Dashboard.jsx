@@ -33,10 +33,7 @@ export default function Dashboard({ role, csrfToken }) {
     useEffect(() => {
         async function fetchTickets() {
             try {
-                // adjust this URL if you implement scope filtering server-side
                 let url = '/tickets'
-                if (role === 'customer') url = '/tickets?scope=customer'
-                if (role === 'agent') url = '/tickets?scope=agent'
 
                 const resp = await axios.get(url, {
                     headers: { Accept: 'application/json' },
@@ -52,14 +49,37 @@ export default function Dashboard({ role, csrfToken }) {
         fetchTickets()
     }, [role])
 
-    const counts = tickets.reduce((acc, t) => {
-        acc[t.status] = (acc[t.status] || 0) + 1
-        return acc
-    }, {})
+    const counts = { open: 0, pending: 0, closed: 0 }
+
+    tickets.forEach(t => {
+        if (t.status === 'open') counts.open += 1
+        else if (t.status === 'pending') counts.pending += 1
+        else if (t.status === 'closed') counts.closed += 1
+    })
 
     return (
-        <div>
-            <h1 className="mb-4">Dashboard</h1>
+        <div className="container mt-2 mr-2 ml-2">
+            <div className="d-flex justify-content-between align-items-center mb-4">
+                <h1>Dashboard</h1>
+                <div className="btn-group">
+                    {role === 'customer' && (
+                        <a href="/tickets/new" className="btn btn-primary">
+                            Create Ticket
+                        </a>
+                    )}
+
+                    {role === 'admin' && (
+                        <>
+                            <a href="/users/sign_up" className="btn btn-outline-dark">
+                                Add Agent
+                            </a>
+                            <a href="/users/sign_up" className="btn btn-outline-dark">
+                                Add Admin
+                            </a>
+                        </>
+                    )}
+                </div>
+            </div>
 
             <div className="row mb-5">
                 {['open', 'pending', 'closed'].map((st) => (
@@ -93,36 +113,42 @@ export default function Dashboard({ role, csrfToken }) {
                                         <PriorityBadge priority={t.priority} />
                                     </div>
                                     <div className="mt-auto">
+
                                         <a
                                             href={`/tickets/${t.id}`}
                                             className="btn btn-sm btn-outline-primary me-2"
                                         >
                                             View
                                         </a>
+                                        {(role == 'customer' || role == 'agent') && (<a
+                                            href={`/tickets/${t.id}/edit`}
+                                            className="btn btn-sm btn-outline-secondary me-2"
+                                        >
+                                            Edit
+                                        </a>)}
 
-                                        {/* {(role === 'agent' || role === 'admin' ) && ( */}
+                                        {role == 'admin' && <button
+                                            onClick={async () => {
+                                                if (!confirm('Delete this ticket?')) return
+                                                await axios.delete(`/tickets/${t.id}`, {
+                                                    headers: { 'X-CSRF-Token': csrfToken }
+                                                })
+                                                setTickets(tickets.filter(x => x.id !== t.id))
+                                            }}
+                                            className="btn btn-sm btn-outline-danger"
+                                        >
+                                            Delete
+                                        </button>}
+
+                                        {role == "admin" && (
                                             <a
-                                                href={`/tickets/${t.id}/edit`}
-                                                className="btn btn-sm btn-outline-secondary me-2"
+                                                href={`/tickets/${t.id}/assign`}
+                                                className="btn btn-sm btn-dark m-1"
                                             >
-                                                Edit
+                                                Assign
                                             </a>
-                                        {/* )} */}
+                                        )}
 
-                                        {/* {role === 'admin' || role == 'customer' && ( */}
-                                            <button
-                                                onClick={async () => {
-                                                    if (!confirm('Delete this ticket?')) return
-                                                    await axios.delete(`/tickets/${t.id}`, {
-                                                        headers: { 'X-CSRF-Token': csrfToken }
-                                                    })
-                                                    setTickets(tickets.filter(x => x.id !== t.id))
-                                                }}
-                                                className="btn btn-sm btn-outline-danger"
-                                            >
-                                                Delete
-                                            </button>
-                                        {/* )} */}
                                     </div>
                                 </div>
                             </div>
