@@ -1,0 +1,9 @@
+<!-- app/views/devise/registrations/new.html.erb -->
+<%= content_for :head do %>
+  <%= javascript_pack_tag 'application' %>
+<% end %>
+
+<div id="react-root"
+     data-page="sign_up"
+     data-csrf-token="<%= form_authenticity_token %>">
+</div>

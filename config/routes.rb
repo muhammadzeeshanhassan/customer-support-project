@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get "agents/index"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -11,4 +12,20 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+  root 'pages#home'
+  devise_for :users, controllers: {
+    registrations: 'user/registrations',
+    sessions:      'user/sessions'
+  }
+
+  resources :tickets, controller: 'ticket' do
+    member do
+      get :assign
+      patch :assign_ticket
+    end
+  end
+
+  get '/dashboard',  to: 'dashboard#show'
+
+  resources :agents, only: [:index]
 end

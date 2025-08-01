@@ -1,0 +1,9 @@
+<%= content_for :head do%>
+    <%= javascript_pack_tag 'application'%>
+<% end %>
+
+<div id='react-root'
+    data-page='add_ticket_form'
+    data-csrf-token="<%= form_authenticity_token %>"
+
+></div>
