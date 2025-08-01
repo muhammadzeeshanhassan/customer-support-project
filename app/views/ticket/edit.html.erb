@@ -1,2 +1,11 @@
-<h1>Ticket#edit</h1>
-<p>Find me in app/views/ticket/edit.html.erb</p>
+<%= content_for :head do %>
+    <%= javascript_pack_tag 'application' %>
+<% end %>
+
+<div 
+    id='react-root'
+    data-page = 'edit_ticket'
+    data-ticket-id='<%= @ticket.id %>'
+    data-role = '<%= current_user.role %>'
+    data-csrf-token='<%= form_authenticity_token %>'
+> </div>

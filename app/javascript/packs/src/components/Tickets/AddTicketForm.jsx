@@ -23,7 +23,7 @@ export default function AddTicketForm({ csrfToken }) {
         onSubmit={async (values, { setSubmitting, setErrors }) => {
           try {
             await axios.post(
-              '/tickets/create',                
+              '/tickets',                
               { ticket: values },
               {
                 headers: {
@@ -33,7 +33,7 @@ export default function AddTicketForm({ csrfToken }) {
                 withCredentials: true    
               }
             )
-            window.location.href = '/tickets'
+            window.location.href = '/dashboard'
           } catch (err) {
             console.error(err)
             setErrors({ general: 'Could not create ticket' })

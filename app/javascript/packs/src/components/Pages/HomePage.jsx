@@ -16,9 +16,14 @@ export default function HomePage() {
                     Get started by creating an account or signing in.
                 </p>
                 {signedIn && (
-                    <a href="/tickets/new" className="btn btn-md btn-primary me-2">
-                        Create Ticket
-                    </a>
+                    (<>
+                        <a href="/tickets/new" className="btn btn-md btn-primary me-2">
+                            Create Ticket
+                        </a>
+                        <a href="/dashboard" className="btn btn-md btn-secondary me-2">
+                            Go To Dashboard
+                        </a>
+                    </>)
                 )}
                 {!signedIn && (
                     <>

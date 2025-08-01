@@ -1,7 +1,6 @@
 class TicketController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_ticket, only: [:show, :edit, :update, :destroy]
-  before_action :authorize_admin!, only: [:edit, :update, :destroy] 
+  before_action :set_ticket, only: [:show, :edit, :update, :destroy] 
 
   def index
     @tickets = if current_user.admin?
@@ -16,7 +15,6 @@ class TicketController < ApplicationController
   end
 
   def new
-    # renders app/views/tickets/new.html.erb
   end
 
   def create
@@ -36,16 +34,15 @@ class TicketController < ApplicationController
   end
 
   def update
-    # if @ticket.update(ticket_params)
-    #   render json: @ticket, status: :ok
-    # else
-    #   render json: { errors: @ticket.errors }, status: :unprocessable_entity
-    # end
+    if @ticket.update(ticket_params)
+      render json: @ticket, status: :ok
+    else
+      render json: { errors: @ticket.errors }, status: :unprocessable_entity
+    end
   end
 
   def destroy
-    # @ticket.destroy
-    # head :no_content
+    @ticket.destroy
   end
 
   private
@@ -58,8 +55,4 @@ class TicketController < ApplicationController
     params.require(:ticket)
           .permit(:subject, :description, :priority, :agent_id, :status)
   end
-
-  # def authorize_admin!
-  #   head :forbidden unless current_user.admin?
-  # end
 end

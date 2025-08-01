@@ -11,13 +11,12 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+  root 'pages#home'
   devise_for :users, controllers: {
     registrations: 'user/registrations',
     sessions:      'user/sessions'
   }
 
   resources :tickets, controller: 'ticket'
-
-  # get '/home', controller: 'pages'
-  root 'pages#home'
+  get '/dashboard',  to: 'dashboard#show'
 end
