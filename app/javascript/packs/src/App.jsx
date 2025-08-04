@@ -1,4 +1,3 @@
-// app/javascript/src/App.jsx
 import React from 'react'
 import LoginForm from './components/Auth/LoginForm'
 import SignUpForm from './components/Auth/SignUpForm'
