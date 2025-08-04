@@ -120,12 +120,14 @@ export default function Dashboard({ role, csrfToken }) {
                                         >
                                             View
                                         </a>
-                                        {(role == 'customer' || role == 'agent') && (<a
-                                            href={`/tickets/${t.id}/edit`}
-                                            className="btn btn-sm btn-outline-secondary me-2"
-                                        >
-                                            Edit
-                                        </a>)}
+                                        {(role === 'agent' || (role === 'customer' && t.status === 'open')) && (
+                                            <a
+                                                href={`/tickets/${t.id}/edit`}
+                                                className="btn btn-sm btn-outline-secondary me-2"
+                                            >
+                                                Edit
+                                            </a>
+                                        )}
 
                                         {role == 'admin' && <button
                                             onClick={async () => {

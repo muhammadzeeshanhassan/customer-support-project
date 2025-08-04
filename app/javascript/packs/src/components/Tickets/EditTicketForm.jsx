@@ -101,7 +101,7 @@ export default function EditTicketForm({ id, csrfToken, role }) {
                             </Field>
                         </div>
 
-                        {!role == 'customer' && (
+                        {(role === 'admin' || role === 'agent') && (
                             <div className="mb-4">
                                 <label htmlFor="status" className="form-label">Status</label>
                                 <Field as="select" name="status" className="form-select">
