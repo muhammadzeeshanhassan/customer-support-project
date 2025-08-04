@@ -146,23 +146,32 @@ export default function Dashboard({ role, csrfToken }) {
             )}
             {meta && (
                 <div className="d-flex justify-content-center my-3">
-                    <button
-                        className="btn btn-outline-secondary me-2"
-                        disabled={meta.current_page <= 1}
-                        onClick={() => setPage(page - 1)}
-                    >
-                        Prev
-                    </button>
-                    <span className="align-self-center mx-2">
-                        Page {meta.current_page} of {meta.total_pages}
-                    </span>
-                    <button
-                        className="btn btn-outline-secondary ms-2"
-                        disabled={meta.current_page >= meta.total_pages}
-                        onClick={() => setPage(page + 1)}
-                    >
-                        Next
-                    </button>
+                    {meta.total_pages > 1 ? (
+                        <>
+                            <button
+                                className="btn btn-outline-secondary me-2"
+                                disabled={meta.current_page <= 1}
+                                onClick={() => setPage(page - 1)}
+                            >
+                                Prev
+                            </button>
+                            <span className="align-self-center mx-2">
+                                Page {meta.current_page} of {meta.total_pages} - {" "} Showing {tickets.length} of {meta.total_count} tickets
+                            </span>
+                            <button
+                                className="btn btn-outline-secondary ms-2"
+                                disabled={meta.current_page >= meta.total_pages}
+                                onClick={() => setPage(page + 1)}
+                            >
+                                Next
+                            </button>
+                        </>
+                    ) : (
+                        <span className="align-self-center">
+                            Page {meta.current_page} of {meta.total_pages} - {" "}
+                            Showing {tickets.length} of {meta.total_count} tickets
+                        </span>
+                    )}
                 </div>
             )}
         </div>
