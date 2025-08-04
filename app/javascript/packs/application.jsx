@@ -2,7 +2,6 @@
 // like app/views/layouts/application.html.erb. All it does is render <div>Hello React</div> at the bottom
 // of the page.
 
-// app/javascript/packs/application.jsx
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './src/App'
