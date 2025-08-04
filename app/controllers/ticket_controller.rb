@@ -23,13 +23,10 @@ class TicketController < ApplicationController
       current_user.tickets
     end
 
-    page     = params.fetch(:page,     1).to_i
+    page     = params.fetch(:page, 1).to_i
     per_page = params.fetch(:per_page, 10).to_i
 
-    tickets = @tickets
-              .order(created_at: :desc)
-              .page(page)
-              .per(per_page)
+    tickets = @tickets.order(created_at: :desc).page(page).per(per_page)
 
     render json: {
       tickets: tickets,
