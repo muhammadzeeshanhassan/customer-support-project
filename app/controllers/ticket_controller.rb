@@ -40,7 +40,7 @@ class TicketController < ApplicationController
   end
 
   def show
-    # render json: @ticket, status: :ok
+    render json: @ticket, status: :ok
     # respond_to do |format|
     # format.html  # renders app/views/ticket/show.html.erb → your React Mount
     # format.json { render json: @ticket }
