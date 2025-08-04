@@ -1,0 +1,18 @@
+Hello <%= @agent.name %>,
+
+You have been assigned a new support ticket. Here are the details:
+
+<br>
+Subject:     <%= @ticket.subject %>
+<br>
+Description: <%= @ticket.description %>
+<br>
+Priority:    <%= @ticket.priority.humanize %>
+<br>
+Status:      <%= @ticket.status.humanize %>
+<br>
+Customer:    <%= @ticket.customer.name %> (<%= @ticket.customer.email %>)
+
+View it in your browser: <%= ticket_url(@ticket) %>
+Thank you,
+The SupportDesk Team

@@ -4,6 +4,7 @@ class TicketController < ApplicationController
 
   def assign_ticket
     if @ticket.update(agent_id: params.dig(:ticket, :agent_id))
+      TicketMailer.notify_agent_of_assignment(@ticket).deliver_later
       render json: @ticket, status: :ok
     else
       render json: {errors: @ticket.errors}, status: :unprocessable_entity
@@ -12,7 +13,6 @@ class TicketController < ApplicationController
 
   def assign
   end
-
 
   def index
     @tickets = if current_user.admin?
@@ -32,6 +32,7 @@ class TicketController < ApplicationController
   def create
     @ticket = current_user.tickets.build(ticket_params)
     if @ticket.save
+      TicketMailer.notify_admins_of_new_ticket(@ticket).deliver_later
       render json: @ticket, status: :created
     else
       render json: { errors: @ticket.errors }, status: :unprocessable_entity
