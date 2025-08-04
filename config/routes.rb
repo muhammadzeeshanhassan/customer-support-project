@@ -28,4 +28,8 @@ Rails.application.routes.draw do
   get '/dashboard',  to: 'dashboard#show'
 
   resources :agents, only: [:index]
+
+  namespace :admin do
+    resources :users
+  end
 end

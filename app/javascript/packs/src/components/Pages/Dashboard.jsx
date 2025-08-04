@@ -61,24 +61,12 @@ export default function Dashboard({ role, csrfToken }) {
         <div className="container mt-2 mr-2 ml-2">
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <h1>Dashboard</h1>
-                <div className="btn-group">
-                    {role === 'customer' && (
-                        <a href="/tickets/new" className="btn btn-primary">
-                            Create Ticket
-                        </a>
-                    )}
+                {role === 'admin' && (
+                    <a href="/admin/users/new" className="btn btn-outline-secondary">
+                        Add Admin / Agent
+                    </a>
+                )}
 
-                    {role === 'admin' && (
-                        <>
-                            <a href="/users/sign_up" className="btn btn-outline-dark">
-                                Add Agent
-                            </a>
-                            <a href="/users/sign_up" className="btn btn-outline-dark">
-                                Add Admin
-                            </a>
-                        </>
-                    )}
-                </div>
             </div>
 
             <div className="row mb-5">
