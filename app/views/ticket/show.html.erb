@@ -1,0 +1,10 @@
+<%= content_for :head do %>
+    <%= javascript_pack_tag 'application' %>
+<% end %>
+
+<div id="react-root"
+     data-page="view_ticket"
+     data-ticket-id="<%= @ticket.id %>"
+     data-csrf-token="<%= form_authenticity_token %>"
+     data-role="<%= current_user.role %>">
+</div>
