@@ -2,8 +2,8 @@ class User::RegistrationsController < Devise::RegistrationsController
   def create
     build_resource(sign_up_params)
     if resource.save
-      UserMailer.welcome_email(resource).deliver_later
       render json: resource, status: :created
+      UserMailer.welcome_email(resource).deliver_later
     else
       render json: { errors: resource.errors }, status: :unprocessable_entity
     end

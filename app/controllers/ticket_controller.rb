@@ -4,8 +4,8 @@ class TicketController < ApplicationController
 
   def assign_ticket
     if @ticket.update(agent_id: params.dig(:ticket, :agent_id))
-      TicketMailer.notify_agent_of_assignment(@ticket).deliver_later
       render json: @ticket, status: :ok
+      TicketMailer.notify_agent_of_assignment(@ticket).deliver_later
     else
       render json: {errors: @ticket.errors}, status: :unprocessable_entity
     end
@@ -23,7 +23,22 @@ class TicketController < ApplicationController
       current_user.tickets
     end
 
-    render json: @tickets, status: :ok
+    page     = params.fetch(:page,     1).to_i
+    per_page = params.fetch(:per_page, 10).to_i
+
+    tickets = @tickets
+              .order(created_at: :desc)
+              .page(page)
+              .per(per_page)
+
+    render json: {
+      tickets: tickets,
+      meta: {
+        current_page: tickets.current_page,
+        total_pages:  tickets.total_pages,
+        total_count:  tickets.total_count
+      }
+    },  status: :ok
   end
 
   def new
@@ -32,8 +47,8 @@ class TicketController < ApplicationController
   def create
     @ticket = current_user.tickets.build(ticket_params)
     if @ticket.save
-      TicketMailer.notify_admins_of_new_ticket(@ticket).deliver_later
       render json: @ticket, status: :created
+      TicketMailer.notify_admins_of_new_ticket(@ticket).deliver_later
     else
       render json: { errors: @ticket.errors }, status: :unprocessable_entity
     end
