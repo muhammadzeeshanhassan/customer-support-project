@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios/dist/axios.min.js'
-import { Badge, Spinner, Alert, Card } from 'react-bootstrap'
+import { Badge, Alert, Card } from 'react-bootstrap'
 
 export default function ViewTicket({ id }) {
   const [ticket, setTicket]     = useState(null)
-  const [loading, setLoading]   = useState(true)
   const [error, setError]       = useState(null)
 
   useEffect(() => {
@@ -14,10 +13,9 @@ export default function ViewTicket({ id }) {
     })
     .then(resp => setTicket(resp.data))
     .catch(err => setError('Failed to load ticket'))
-    .finally(() => setLoading(false))
   }, [id])
 
-//   if (loading) return <Spinner animation="border" />
+
   if (error)   return <Alert variant="danger">{error}</Alert>
   if (!ticket) return <Alert variant="warning">Ticket not found</Alert>
 
