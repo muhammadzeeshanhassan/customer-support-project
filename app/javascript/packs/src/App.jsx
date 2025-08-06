@@ -7,6 +7,7 @@ import HomePage from './components/Pages/HomePage'
 import Dashboard from './components/Pages/Dashboard'
 import EditTicketForm from './components/Tickets/EditTicketForm'
 import AssignTicketForm from './components/Tickets/AssignTicketForm'
+import ViewTicket from './components/Tickets/ViewTicket'
 
 export default function App() {
   const container = document.getElementById('react-root')
@@ -31,7 +32,9 @@ export default function App() {
       return <EditTicketForm csrfToken={csrfToken} id={ticketId} role={role}/>
     case 'assign_ticket':
       return <AssignTicketForm csrfToken={csrfToken} role={role} ticketId={ticketId} onSuccess={() => window.location.reload()}/>
+    case 'view_ticket':
+      return <ViewTicket id={ticketId} csrfToken={csrfToken} role={role} />
     default:
-      return <div>Oops… nothing to render</div>
+      return <div>Nothing to render</div>
   }
 }
