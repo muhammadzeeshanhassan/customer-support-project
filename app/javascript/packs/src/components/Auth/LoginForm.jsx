@@ -69,7 +69,7 @@ export default function LoginForm({ csrfToken }) {
                 name="password"
                 type="password"
                 className="form-control"
-                placeholder="••••••••"
+                placeholder="******"
               />
               <ErrorMessage
                 name="password"
@@ -85,9 +85,21 @@ export default function LoginForm({ csrfToken }) {
             >
               {isSubmitting ? 'Loging In…' : 'Login'}
             </button>
+            <div className='container'>
+
+            </div>
           </Form>
         )}
       </Formik>
-    </div>
+
+      <div className="mt-4 p-3 border rounded bg-light">
+        <h5 className="mb-2">Demo Credentials</h5>
+        <ul className="list-unstyled mb-0">
+          <li><strong>Customer</strong> - <code>mzeeshanhassan125@gmail.com</code> / <code>123456</code></li>
+          <li><strong>Agent</strong>    - <code>hamza167167@gmail.com</code> / <code>123456</code></li>
+          <li><strong>Admin</strong>    - <code>muhammad.zeeshan@devsinc.com</code> / <code>123456</code></li>
+        </ul>
+      </div>
+    </div >
   )
 }
