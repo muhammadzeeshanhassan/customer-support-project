@@ -55,8 +55,7 @@ export default function EditTicketForm({ id, csrfToken, role }) {
                                 withCredentials: true
                             }
                         )
-                        // redirect back to the ticket show page
-                        window.location.href = `/tickets/${id}`
+                        window.location.href = `/dashboard`
                     } catch (err) {
                         console.error(err)
                         setErrors({ general: 'Could not edit ticket' })

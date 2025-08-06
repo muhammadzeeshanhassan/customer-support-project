@@ -29,25 +29,23 @@ function PriorityBadge({ priority }) {
 export default function Dashboard({ role, csrfToken }) {
     const [tickets, setTickets] = useState([])
     const [loading, setLoading] = useState(true)
+    const [page, setPage] = useState(1)
+    const [meta, setMeta] = useState(null)
+    const perPage = 6
 
     useEffect(() => {
-        async function fetchTickets() {
-            try {
-                let url = '/tickets'
-
-                const resp = await axios.get(url, {
-                    headers: { Accept: 'application/json' },
-                    withCredentials: true
-                })
-                setTickets(resp.data)
-            } catch (err) {
-                console.error('Error fetching tickets', err)
-            } finally {
-                setLoading(false)
-            }
-        }
-        fetchTickets()
-    }, [role])
+        axios
+            .get(`/tickets?page=${page}&per_page=${perPage}`, {
+                headers: { Accept: 'application/json' },
+                withCredentials: true
+            })
+            .then(resp => {
+                setTickets(resp.data.tickets)
+                setMeta(resp.data.meta)
+            })
+            .catch(console.error)
+            .finally(() => setLoading(false))
+    }, [role, page])
 
     const counts = { open: 0, pending: 0, closed: 0 }
 
@@ -144,6 +142,36 @@ export default function Dashboard({ role, csrfToken }) {
                             </div>
                         </div>
                     ))}
+                </div>
+            )}
+            {meta && (
+                <div className="d-flex justify-content-center my-3">
+                    {meta.total_pages > 1 ? (
+                        <>
+                            <button
+                                className="btn btn-outline-secondary me-2"
+                                disabled={meta.current_page <= 1}
+                                onClick={() => setPage(page - 1)}
+                            >
+                                Prev
+                            </button>
+                            <span className="align-self-center mx-2">
+                                Page {meta.current_page} of {meta.total_pages} - {" "} Showing {tickets.length} of {meta.total_count} tickets
+                            </span>
+                            <button
+                                className="btn btn-outline-secondary ms-2"
+                                disabled={meta.current_page >= meta.total_pages}
+                                onClick={() => setPage(page + 1)}
+                            >
+                                Next
+                            </button>
+                        </>
+                    ) : (
+                        <span className="align-self-center">
+                            Page {meta.current_page} of {meta.total_pages} - {" "}
+                            Showing {tickets.length} of {meta.total_count} tickets
+                        </span>
+                    )}
                 </div>
             )}
         </div>
