@@ -31,7 +31,20 @@ export default function Dashboard({ role, csrfToken, userName }) {
     const [loading, setLoading] = useState(true)
     const [page, setPage] = useState(1)
     const [meta, setMeta] = useState(null)
+    const [menuOpen, setMenuOpen] = useState(false)
     const perPage = 6
+
+    const handleLogout = async () => {
+        try {
+            await axios.delete('/users/sign_out', {
+                headers: { 'X-CSRF-Token': csrfToken },
+                withCredentials: true
+            })
+            window.location.href = '/users/sign_in'
+        } catch (err) {
+            console.error('Logout failed', err)
+        }
+    }
 
     useEffect(() => {
         axios
@@ -59,14 +72,36 @@ export default function Dashboard({ role, csrfToken, userName }) {
         <div className="container mt-2 mr-2 ml-2">
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <h1>Dashboard</h1>
-                <div className="d-flex align-items-center">
-                    <div
-                        className="rounded-circle bg-primary text-white d-flex justify-content-center align-items-center"
-                        style={{ width: 32, height: 32 }}
+                <div className="position-relative">
+                    <button
+                        onClick={() => setMenuOpen(open => !open)}
+                        className="btn p-0 border-0 bg-transparent d-flex align-items-center"
+                        aria-label="Profile menu"
                     >
-                        {userName?.charAt(0).toUpperCase() || 'U'}
-                    </div>
-                    <span className="ms-2 text-capitalize">{role}</span>
+                        <div
+                            className="rounded-circle bg-primary text-white d-flex justify-content-center align-items-center"
+                            style={{ width: 32, height: 32 }}
+                        >
+                            {userName?.charAt(0).toUpperCase() || 'U'}
+                        </div>
+                        <span className="ms-2 text-capitalize">{role}</span>
+                    </button>
+
+                    {menuOpen && (
+                        <ul
+                            className="dropdown-menu show"
+                            style={{ position: 'absolute', right: 0, top: '100%', marginTop: '0.5rem' }}
+                        >
+                            <li>
+                                <button
+                                    className="dropdown-item"
+                                    onClick={handleLogout}
+                                >
+                                    Sign out
+                                </button>
+                            </li>
+                        </ul>
+                    )}
                 </div>
             </div>
 
