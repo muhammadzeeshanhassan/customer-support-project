@@ -4,8 +4,8 @@ class TicketController < ApplicationController
 
   def assign_ticket
     if @ticket.update(agent_id: params.dig(:ticket, :agent_id))
+      TicketNotificationWorker.perform_async(@ticket.id, "assignment")
       render json: @ticket, status: :ok
-      TicketMailer.notify_agent_of_assignment(@ticket).deliver_later
     else
       render json: {errors: @ticket.errors}, status: :unprocessable_entity
     end
@@ -44,8 +44,8 @@ class TicketController < ApplicationController
   def create
     @ticket = current_user.tickets.build(ticket_params)
     if @ticket.save
+      TicketNotificationWorker.perform_async(@ticket.id, "new_ticket")
       render json: @ticket, status: :created
-      TicketMailer.notify_admins_of_new_ticket(@ticket).deliver_later
     else
       render json: { errors: @ticket.errors }, status: :unprocessable_entity
     end

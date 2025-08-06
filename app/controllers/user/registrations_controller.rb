@@ -2,8 +2,9 @@ class User::RegistrationsController < Devise::RegistrationsController
   def create
     build_resource(sign_up_params)
     if resource.save
+      UserNotificationWorker.perform_async(resource.id, "signup")
       render json: resource, status: :created
-      UserMailer.welcome_email(resource).deliver_later
+      # UserMailer.welcome_email(resource).deliver_later
     else
       render json: { errors: resource.errors }, status: :unprocessable_entity
     end

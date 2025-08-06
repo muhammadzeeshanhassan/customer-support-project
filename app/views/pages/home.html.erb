@@ -2,7 +2,16 @@
     <%= javascript_pack_tag 'application'%>
 <% end %>
 
-<div id='react-root'
-    data-page='home_page',
-    data-signed-in="<%= user_signed_in? %>"
-></div>
+<% if user_signed_in? %>
+  <div id="react-root"
+       data-page="home_page"
+       data-role="<%= current_user.role %>"
+       data-signed-in="true"
+  ></div>
+<% else %>
+  <div id="react-root"
+       data-page="home_page"
+       data-signed-in="false"
+  ></div>
+<% end %>
+
