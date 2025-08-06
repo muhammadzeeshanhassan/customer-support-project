@@ -41,6 +41,7 @@ export default function ViewTicket({ id }) {
         {ticket.agent && (
           <p><strong>Assigned to:</strong> {ticket.agent.name} ({ticket.agent.email})</p>
         )}
+        <a href="/dashboard"  className="btn btn-primary">Go to Dashboard</a> 
       </Card.Body>
     </Card>
   )

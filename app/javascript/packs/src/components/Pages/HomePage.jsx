@@ -1,12 +1,7 @@
 import React from "react"
 import "bootstrap/dist/css/bootstrap.min.css"
 
-export default function HomePage() {
-
-    const container = document.getElementById("react-root")
-    const signedInStr = container?.dataset.signedIn
-    const signedIn = signedInStr === "true"
-
+export default function HomePage({ role, signedIn }) {
     return (
         <div className="d-flex vh-100 align-items-center justify-content-center">
             <div className="text-center">
@@ -15,14 +10,16 @@ export default function HomePage() {
                     Get started by creating an account or signing in.
                 </p>
                 {signedIn && (
-                    (<>
-                        <a href="/tickets/new" className="btn btn-md btn-primary me-2">
-                            Create Ticket
-                        </a>
+                    <>
+                        {role === "customer" && (
+                            <a href="/tickets/new" className="btn btn-md btn-primary me-2">
+                                Create Ticket
+                            </a>
+                        )}
                         <a href="/dashboard" className="btn btn-md btn-secondary me-2">
                             Go To Dashboard
                         </a>
-                    </>)
+                    </>
                 )}
                 {!signedIn && (
                     <>
