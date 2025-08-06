@@ -91,7 +91,7 @@ export default function SignUpForm({ csrfToken }) {
                 name="phone"
                 type="text"
                 className="form-control"
-                placeholder="+92-300-1234567"
+                placeholder="03001111111"
               />
               <ErrorMessage
                 name="phone"
@@ -106,7 +106,7 @@ export default function SignUpForm({ csrfToken }) {
                 name="password"
                 type="password"
                 className="form-control"
-                placeholder="••••••••"
+                placeholder="******"
               />
               <ErrorMessage
                 name="password"
@@ -123,7 +123,7 @@ export default function SignUpForm({ csrfToken }) {
                 name="password_confirmation"
                 type="password"
                 className="form-control"
-                placeholder="••••••••"
+                placeholder="******"
               />
               <ErrorMessage
                 name="password_confirmation"
