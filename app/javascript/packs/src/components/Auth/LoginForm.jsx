@@ -1,4 +1,3 @@
-// app/javascript/src/components/Auth/SignUpForm.jsx
 import React from 'react'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import axios from 'axios/dist/axios.min.js'

@@ -1,4 +1,3 @@
-// app/javascript/src/App.jsx
 import React from 'react'
 import LoginForm from './components/Auth/LoginForm'
 import SignUpForm from './components/Auth/SignUpForm'
@@ -8,6 +7,7 @@ import Dashboard from './components/Pages/Dashboard'
 import EditTicketForm from './components/Tickets/EditTicketForm'
 import AssignTicketForm from './components/Tickets/AssignTicketForm'
 import ViewTicket from './components/Tickets/ViewTicket'
+import AddUserForm from './components/Auth/AddUserForm'
 
 export default function App() {
   const container = document.getElementById('react-root')
@@ -29,11 +29,13 @@ export default function App() {
     case 'dashboard':
       return <Dashboard role={role} ticketCount={count} csrfToken={csrfToken} />
     case 'edit_ticket':
-      return <EditTicketForm csrfToken={csrfToken} id={ticketId} role={role}/>
+      return <EditTicketForm csrfToken={csrfToken} id={ticketId} role={role} />
     case 'assign_ticket':
-      return <AssignTicketForm csrfToken={csrfToken} role={role} ticketId={ticketId} onSuccess={() => window.location.reload()}/>
+      return <AssignTicketForm csrfToken={csrfToken} role={role} ticketId={ticketId} />
     case 'view_ticket':
       return <ViewTicket id={ticketId} csrfToken={csrfToken} role={role} />
+    case 'add_user':
+      return <AddUserForm csrfToken={csrfToken} />
     default:
       return <div>Nothing to render</div>
   }
