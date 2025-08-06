@@ -16,6 +16,7 @@ export default function App() {
   const role = container?.dataset.role
   const count = container?.dataset.count
   const ticketId = container?.dataset.ticketId
+  const userName = container?.dataset.userName
 
   switch (page) {
     case 'sign_in':
@@ -27,7 +28,7 @@ export default function App() {
     case 'home_page':
       return <HomePage />
     case 'dashboard':
-      return <Dashboard role={role} ticketCount={count} csrfToken={csrfToken} />
+      return <Dashboard role={role} csrfToken={csrfToken} userName={userName}/>
     case 'edit_ticket':
       return <EditTicketForm csrfToken={csrfToken} id={ticketId} role={role} />
     case 'assign_ticket':
