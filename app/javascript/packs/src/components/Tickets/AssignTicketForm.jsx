@@ -32,7 +32,6 @@ export default function AssignTicketFormik({ ticketId, csrfToken }) {
         return errors
       }}
       onSubmit={async (values, { setSubmitting, setErrors }) => {
-        // 3) if changing assignment, confirm
         if (
           initialAgentId &&
           values.agent_id !== initialAgentId
@@ -52,7 +51,6 @@ export default function AssignTicketFormik({ ticketId, csrfToken }) {
           }
         }
 
-        // 4) perform patch
         try {
           await axios.patch(
             `/tickets/${ticketId}/assign_ticket`,
@@ -65,7 +63,6 @@ export default function AssignTicketFormik({ ticketId, csrfToken }) {
               withCredentials: true
             }
           )
-          // redirect on success
           window.location.href = '/dashboard'
         } catch (err) {
           console.error('Assign error →', err.response?.data)
