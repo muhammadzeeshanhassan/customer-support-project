@@ -1,0 +1,22 @@
+<h2>Hi <%= @customer.name %>,</h2>
+
+<p>We wanted to let you know that the status of your support ticket has changed.</p>
+
+<table style="border-collapse: collapse;">
+  <tr>
+    <td style="padding: 6px;"><strong>Title:</strong></td>
+    <td style="padding: 6px;"><%= @ticket.subject %></td>
+  </tr>
+  <tr>
+    <td style="padding: 6px;"><strong>Current Status:</strong></td>
+    <td style="padding: 6px;"><%= @ticket.status.humanize %></td>
+  </tr>
+  <tr>
+    <td style="padding: 6px;"><strong>Description:</strong></td>
+    <td style="padding: 6px;"><%= @ticket.description %></td>
+  </tr>
+</table>
+
+<p>If you have any questions, feel free to reply to this email or log into your account for more details.</p>
+
+<p>Thank you,<br>Support Team</p>
