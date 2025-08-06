@@ -2,35 +2,28 @@ import React, { useState, useEffect } from 'react'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import axios from 'axios/dist/axios.min.js'
 
-export default function AssignTicketForm({ ticketId, csrfToken }) {
+export default function AssignTicketFormik({ ticketId, csrfToken }) {
   const [agents, setAgents] = useState([])
-  const [ticket, setTicket] = useState(null)
+  const [initialAgentId, setInitialAgentId] = useState('')
 
   useEffect(() => {
     axios
-      .get('/agents', {
-        headers: { Accept: 'application/json' },
-        withCredentials: true
-      })
-      .then(resp => setAgents(resp.data))
+      .get('/agents', { headers: { Accept: 'application/json' }, withCredentials: true })
+      .then(r => setAgents(r.data))
       .catch(console.error)
   }, [])
 
   useEffect(() => {
     axios
-      .get(`/tickets/${ticketId}`, {
-        headers: { Accept: 'application/json' },
-        withCredentials: true
-      })
-      .then(resp => setTicket(resp.data))
+      .get(`/tickets/${ticketId}.json`, { headers: { Accept: 'application/json' }, withCredentials: true })
+      .then(r => setInitialAgentId(r.data.agent_id || ''))
       .catch(console.error)
   }, [ticketId])
 
-  if (!ticket) return null
-
   return (
     <Formik
-      initialValues={{ agent_id: ticket.agent_id || '' }}
+      enableReinitialize
+      initialValues={{ agent_id: initialAgentId }}
       validate={values => {
         const errors = {}
         if (!values.agent_id) {
@@ -39,18 +32,19 @@ export default function AssignTicketForm({ ticketId, csrfToken }) {
         return errors
       }}
       onSubmit={async (values, { setSubmitting, setErrors }) => {
+        // 3) if changing assignment, confirm
         if (
-          ticket.agent_id &&
-          ticket.agent_id.toString() !== values.agent_id
+          initialAgentId &&
+          values.agent_id !== initialAgentId
         ) {
-          const current = agents.find(
-            a => a.id.toString() === ticket.agent_id.toString()
-          )
-          const name = current ? current.name : 'another agent'
+          const oldAgent = agents.find(a => a.id.toString() === initialAgentId.toString())
+          const newAgent = agents.find(a => a.id.toString() === values.agent_id)
+          const oldName = oldAgent ? oldAgent.name : 'no one'
+          const newName = newAgent ? newAgent.name : 'no one'
           if (
             !window.confirm(
-              `This ticket is currently assigned to ${name}.\n` +
-              `Are you sure you want to assign it to someone else?`
+              `This ticket is currently assigned to ${oldName}.\n` +
+              `Are you sure you want to assign it to ${newName}?`
             )
           ) {
             setSubmitting(false)
@@ -58,6 +52,7 @@ export default function AssignTicketForm({ ticketId, csrfToken }) {
           }
         }
 
+        // 4) perform patch
         try {
           await axios.patch(
             `/tickets/${ticketId}/assign_ticket`,
@@ -70,6 +65,7 @@ export default function AssignTicketForm({ ticketId, csrfToken }) {
               withCredentials: true
             }
           )
+          // redirect on success
           window.location.href = '/dashboard'
         } catch (err) {
           console.error('Assign error →', err.response?.data)
@@ -79,8 +75,8 @@ export default function AssignTicketForm({ ticketId, csrfToken }) {
         }
       }}
     >
-       {({ isSubmitting, errors }) => (
-        <div className="container mr-1 ml-1 mt-3">
+      {({ isSubmitting, errors }) => (
+        <div className="container mt-3">
           <Form className="d-flex align-items-center">
             <Field
               as="select"
@@ -97,14 +93,14 @@ export default function AssignTicketForm({ ticketId, csrfToken }) {
             </Field>
             <ErrorMessage name="agent_id" component="div" className="text-danger me-3" />
 
-            <button type="submit" className="btn btn-md  btn-primary" disabled={isSubmitting}>
+            <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
               {isSubmitting ? 'Assigning…' : 'Assign'}
             </button>
-
-            {errors.general && (
-              <div className="text-danger ms-3">{errors.general}</div>
-            )}
           </Form>
+
+          {errors.general && (
+            <div className="text-danger mt-2">{errors.general}</div>
+          )}
         </div>
       )}
     </Formik>
