@@ -2,13 +2,12 @@ class Admin::UsersController < ApplicationController
   before_action :authenticate_user!
   before_action :authorize_admin!
 
-  def new
-  end
-
+  def new; end
 
   def create
     @user = User.new(user_params)
     if @user.save
+      UserNotificationWorker.perform_async(@user.id, "signup")
       render json: @user, status: :created
     else
       render json: { errors: @user.errors.full_messages }, status: :unprocessable_entity
