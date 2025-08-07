@@ -434,8 +434,6 @@ DEPENDENCIES
   puma (>= 5.0)
   rails (~> 8.0.2)
   rspec-rails
-  rubocop
-  rubocop-rails
   rubocop-rails-omakase
   selenium-webdriver
   shoulda-matchers
