@@ -12,24 +12,26 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
-  root 'pages#home'
+  root "pages#home"
   devise_for :users, controllers: {
-    registrations: 'user/registrations',
-    sessions:      'user/sessions'
+    registrations: "user/registrations",
+    sessions:      "user/sessions"
   }
 
-  resources :tickets, controller: 'ticket' do
+  resources :tickets, controller: "ticket" do
     member do
       get :assign
       patch :assign_ticket
     end
   end
 
-  get '/dashboard',  to: 'dashboard#show'
+  get "/dashboard",  to: "dashboard#show"
 
-  resources :agents, only: [:index]
+  resources :agents, only: [ :index ]
 
   namespace :admin do
     resources :users
   end
+
+  match "*unmatched", to: "errors#not_found", via: :all
 end
