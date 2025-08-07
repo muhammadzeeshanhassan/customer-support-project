@@ -1,9 +1,11 @@
-import React from 'react'
-import { Formik, Form, Field, ErrorMessage } from 'formik'
-import axios from 'axios/dist/axios.min.js'
-import 'bootstrap/dist/css/bootstrap.min.css'
+import React from 'react';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { useAuth } from '../../hooks/useAuth';
 
 export default function SignUpForm({ csrfToken, defaultRole = 'customer' }) {
+  const { signup } = useAuth(csrfToken);
+
   return (
     <div className="container mt-5" style={{ maxWidth: '480px' }}>
       <h2 className="mb-4 text-center">Create an Account</h2>
@@ -15,53 +17,36 @@ export default function SignUpForm({ csrfToken, defaultRole = 'customer' }) {
           phone: '',
           password: '',
           password_confirmation: '',
-          role: defaultRole
+          role: defaultRole,
         }}
-        validate={values => {
-          const errors = {}
-          if (!values.name) errors.name = 'Required'
-          if (!values.email) errors.email = 'Required'
-          if (!values.password) errors.password = 'Required'
+        validate={(values) => {
+          const errors = {};
+          if (!values.name) errors.name = 'Required';
+          if (!values.email) errors.email = 'Required';
+          if (!values.password) errors.password = 'Required';
           if (values.password !== values.password_confirmation) {
-            errors.password_confirmation = 'Passwords must match'
+            errors.password_confirmation = 'Passwords must match';
           }
-          return errors
+          return errors;
         }}
         onSubmit={async (values, { setSubmitting, setErrors }) => {
           try {
-            await axios.post(
-              '/users',
-              { user: values },
-              {
-                headers: {
-                  'Accept': 'application/json',
-                  'Content-Type': 'application/json',
-                  'X-CSRF-Token': csrfToken
-                },
-                withCredentials: true
-              }
-            )
-            window.location.href = '/'
-          } catch (err) {
-            const data = err.response?.data
-            if (data?.error) {
-              setErrors({ general: data.error })
-            }
-            else if (Array.isArray(data?.errors)) {
-              setErrors({ general: data.errors.join(' — ') })
-            }
-            else if (data?.errors && typeof data.errors === 'object') {
-              const fieldErrors = {}
-              for (const [field, msgs] of Object.entries(data.errors)) {
-                fieldErrors[field] = Array.isArray(msgs) ? msgs.join(' ') : msgs
-              }
-              setErrors(fieldErrors)
-            }
-            else {
-              setErrors({ general: err.message })
+            await signup(values);
+            window.location.href = '/';
+          } catch (error) {
+            // Field-level vs. general errors
+            if (error.message.includes(':')) {
+              const fieldErrors = {};
+              error.message.split(' · ').forEach((pair) => {
+                const [field, msg] = pair.split(':').map((s) => s.trim());
+                fieldErrors[field] = msg;
+              });
+              setErrors(fieldErrors);
+            } else {
+              setErrors({ general: error.message });
             }
           } finally {
-            setSubmitting(false)
+            setSubmitting(false);
           }
         }}
       >
@@ -74,64 +59,44 @@ export default function SignUpForm({ csrfToken, defaultRole = 'customer' }) {
             {[
               { name: 'name', label: 'Name', type: 'text' },
               { name: 'email', label: 'Email', type: 'email' },
-              { name: 'phone', label: 'Phone', type: 'text' }
+              { name: 'phone', label: 'Phone', type: 'text' },
             ].map(({ name, label, type }) => (
               <div className="mb-3 position-relative" key={name}>
-                <label htmlFor={name} className="form-label">
-                  {label}
-                </label>
+                <label htmlFor={name} className="form-label">{label}</label>
                 <Field
                   id={name}
                   name={name}
                   type={type}
-                  className={`form-control${touched[name] && errors[name] ? ' is-invalid' : ''
-                    }`}
-                  placeholder={
-                    name === 'phone' ? '0300xxxxxxx' : undefined
-                  }
+                  placeholder={name === 'phone' ? '0300xxxxxxx' : undefined}
+                  className={`form-control${touched[name] && errors[name] ? ' is-invalid' : ''}`}
                 />
                 <ErrorMessage name={name}>
-                  {msg => <div className="invalid-feedback">{msg}</div>}
+                  {(msg) => <div className="invalid-feedback">{msg}</div>}
                 </ErrorMessage>
               </div>
             ))}
 
-            <div className="mb-3 position-relative">
-              <label htmlFor="role" className="form-label">
-                Role
-              </label>
-              <Field
-                as="select"
-                id="role"
-                name="role"
-                className="form-select"
-              >
+            <div className="mb-3">
+              <label htmlFor="role" className="form-label">Role</label>
+              <Field as="select" id="role" name="role" className="form-select">
                 <option value="customer">Customer</option>
               </Field>
             </div>
 
-
             {[
               { name: 'password', label: 'Password', type: 'password' },
-              {
-                name: 'password_confirmation',
-                label: 'Confirm Password',
-                type: 'password'
-              }
+              { name: 'password_confirmation', label: 'Confirm Password', type: 'password' },
             ].map(({ name, label, type }) => (
               <div className="mb-3 position-relative" key={name}>
-                <label htmlFor={name} className="form-label">
-                  {label}
-                </label>
+                <label htmlFor={name} className="form-label">{label}</label>
                 <Field
                   id={name}
                   name={name}
                   type={type}
-                  className={`form-control${touched[name] && errors[name] ? ' is-invalid' : ''
-                    }`}
+                  className={`form-control${touched[name] && errors[name] ? ' is-invalid' : ''}`}
                 />
                 <ErrorMessage name={name}>
-                  {msg => <div className="invalid-feedback">{msg}</div>}
+                  {(msg) => <div className="invalid-feedback">{msg}</div>}
                 </ErrorMessage>
               </div>
             ))}
@@ -147,5 +112,5 @@ export default function SignUpForm({ csrfToken, defaultRole = 'customer' }) {
         )}
       </Formik>
     </div>
-  )
+  );
 }
