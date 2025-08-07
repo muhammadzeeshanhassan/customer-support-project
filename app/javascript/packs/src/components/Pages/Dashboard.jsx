@@ -42,7 +42,6 @@ export default function Dashboard({ role, csrfToken, userName }) {
             })
             window.location.href = '/users/sign_in'
         } catch (err) {
-            console.error('Logout failed', err)
         }
     }
 

@@ -43,7 +43,6 @@ export default function SignUpForm({ csrfToken, defaultRole = 'customer' }) {
             )
             window.location.href = '/'
           } catch (err) {
-            console.error(err)
             const data = err.response?.data
             if (data?.error) {
               setErrors({ general: data.error })
@@ -72,7 +71,6 @@ export default function SignUpForm({ csrfToken, defaultRole = 'customer' }) {
               <div className="alert alert-danger">{errors.general}</div>
             )}
 
-            {/* Name, Email, Phone */}
             {[
               { name: 'name', label: 'Name', type: 'text' },
               { name: 'email', label: 'Email', type: 'email' },
@@ -98,7 +96,6 @@ export default function SignUpForm({ csrfToken, defaultRole = 'customer' }) {
               </div>
             ))}
 
-            {/* Role (hidden/select) */}
             <div className="mb-3 position-relative">
               <label htmlFor="role" className="form-label">
                 Role
@@ -110,13 +107,10 @@ export default function SignUpForm({ csrfToken, defaultRole = 'customer' }) {
                 className="form-select"
               >
                 <option value="customer">Customer</option>
-                {/* if you ever want agent/admin: */}
-                {/* <option value="agent">Agent</option> */}
-                {/* <option value="admin">Admin</option> */}
               </Field>
             </div>
 
-            {/* Password & Confirmation */}
+
             {[
               { name: 'password', label: 'Password', type: 'password' },
               {

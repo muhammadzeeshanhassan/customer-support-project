@@ -2,7 +2,6 @@ import React from "react"
 import "bootstrap/dist/css/bootstrap.min.css"
 
 export default function HomePage({ role, signedIn }) {
-    console.log("Role is : ", role)
     return (
         <div className="d-flex vh-100 align-items-center justify-content-center">
             <div className="text-center">

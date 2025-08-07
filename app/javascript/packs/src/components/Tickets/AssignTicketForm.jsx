@@ -65,7 +65,6 @@ export default function AssignTicketFormik({ ticketId, csrfToken }) {
           )
           window.location.href = '/dashboard'
         } catch (err) {
-          console.error('Assign error →', err.response?.data)
           setErrors({ general: 'Assignment failed' })
         } finally {
           setSubmitting(false)

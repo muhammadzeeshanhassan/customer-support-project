@@ -36,7 +36,6 @@ export default function LoginForm({ csrfToken }) {
             )
             window.location.href = '/'
           } catch (err) {
-            console.error(err)
             const response = err.response?.data
             const message =
               response?.error ||
