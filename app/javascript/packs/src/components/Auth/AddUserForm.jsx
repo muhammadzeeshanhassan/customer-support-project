@@ -1,6 +1,7 @@
 import React from 'react'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import axios from 'axios/dist/axios.min.js'
+import 'bootstrap/dist/css/bootstrap.min.css'
 
 export default function AddUserForm({ csrfToken }) {
     return (
@@ -33,23 +34,38 @@ export default function AddUserForm({ csrfToken }) {
                             { user: values },
                             {
                                 headers: {
-                                    'X-CSRF-Token': csrfToken,
-                                    'Content-Type': 'application/json'
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-Token': csrfToken
                                 },
                                 withCredentials: true
                             }
                         )
                         window.location.href = '/dashboard'
                     } catch (err) {
-                        const resp = err.response?.data
-                        setErrors({ general: resp?.errors?.join(' ') || 'Failed to create' })
+                        const data = err.response?.data
+                        if (data?.error) {
+                            setErrors({ general: data.error })
+                        }
+                        else if (Array.isArray(data?.errors)) {
+                            setErrors({ general: data.errors.join(' — ') })
+                        }
+                        else if (data?.errors && typeof data.errors === 'object') {
+                            const fieldErr = {}
+                            Object.entries(data.errors).forEach(([field, msgs]) => {
+                                fieldErr[field] = Array.isArray(msgs) ? msgs.join(' ') : msgs
+                            })
+                            setErrors(fieldErr)
+                        } else {
+                            setErrors({ general: err.message })
+                        }
                     } finally {
                         setSubmitting(false)
                     }
                 }}
             >
-                {({ isSubmitting, errors }) => (
-                    <Form>
+                {({ isSubmitting, errors, touched }) => (
+                    <Form noValidate>
                         {errors.general && (
                             <div className="alert alert-danger">{errors.general}</div>
                         )}
@@ -59,16 +75,33 @@ export default function AddUserForm({ csrfToken }) {
                             { name: 'email', label: 'Email', type: 'email' },
                             { name: 'phone', label: 'Phone', type: 'text' }
                         ].map(({ name, label, type }) => (
-                            <div className="mb-3" key={name}>
-                                <label className="form-label">{label}</label>
-                                <Field name={name} type={type} className="form-control" />
-                                <ErrorMessage name={name} component="div" className="text-danger mt-1" />
+                            <div className="mb-3 position-relative" key={name}>
+                                <label htmlFor={name} className="form-label">
+                                    {label}
+                                </label>
+                                <Field
+                                    id={name}
+                                    name={name}
+                                    type={type}
+                                    className={`form-control${touched[name] && errors[name] ? ' is-invalid' : ''
+                                        }`}
+                                />
+                                <ErrorMessage name={name}>
+                                    {msg => <div className="invalid-feedback">{msg}</div>}
+                                </ErrorMessage>
                             </div>
                         ))}
 
-                        <div className="mb-3">
-                            <label className="form-label">Role</label>
-                            <Field as="select" name="role" className="form-select">
+                        <div className="mb-3 position-relative">
+                            <label htmlFor="role" className="form-label">
+                                Role
+                            </label>
+                            <Field
+                                as="select"
+                                id="role"
+                                name="role"
+                                className="form-select"
+                            >
                                 <option value="agent">Agent</option>
                                 <option value="admin">Admin</option>
                             </Field>
@@ -76,12 +109,26 @@ export default function AddUserForm({ csrfToken }) {
 
                         {[
                             { name: 'password', label: 'Password', type: 'password' },
-                            { name: 'password_confirmation', label: 'Confirm Password', type: 'password' }
+                            {
+                                name: 'password_confirmation',
+                                label: 'Confirm Password',
+                                type: 'password'
+                            }
                         ].map(({ name, label, type }) => (
-                            <div className="mb-3" key={name}>
-                                <label className="form-label">{label}</label>
-                                <Field name={name} type={type} className="form-control" />
-                                <ErrorMessage name={name} component="div" className="text-danger mt-1" />
+                            <div className="mb-3 position-relative" key={name}>
+                                <label htmlFor={name} className="form-label">
+                                    {label}
+                                </label>
+                                <Field
+                                    id={name}
+                                    name={name}
+                                    type={type}
+                                    className={`form-control${touched[name] && errors[name] ? ' is-invalid' : ''
+                                        }`}
+                                />
+                                <ErrorMessage name={name}>
+                                    {msg => <div className="invalid-feedback">{msg}</div>}
+                                </ErrorMessage>
                             </div>
                         ))}
 

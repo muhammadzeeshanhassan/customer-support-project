@@ -27,6 +27,7 @@ export default function LoginForm({ csrfToken }) {
               { user: values },
               {
                 headers: {
+                  'Accept': 'application/json',
                   'X-CSRF-Token': csrfToken,
                   'Content-Type': 'application/json'
                 },
@@ -36,46 +37,56 @@ export default function LoginForm({ csrfToken }) {
             window.location.href = '/'
           } catch (err) {
             console.error(err)
-            setErrors({ general: 'Could not login user' })
+            const response = err.response?.data
+            const message =
+              response?.error ||
+              (Array.isArray(response?.errors) && response.errors.join(' - ')) ||
+              err.message
+
+            setErrors({ general: message })
           } finally {
             setSubmitting(false)
           }
         }}
       >
         {({ isSubmitting, errors }) => (
-          <Form>
+          <Form noValidate>
             {errors.general && (
               <div className="alert alert-danger">{errors.general}</div>
             )}
 
-            <div className="mb-3">
-              <label htmlFor="email" className="form-label">Email</label>
+            <div className="mb-3 position-relative">
+              <label htmlFor="email" className="form-label">
+                Email
+              </label>
               <Field
+                id="email"
                 name="email"
                 type="email"
-                className="form-control"
                 placeholder="you@example.com"
+                className={`form-control${touched.email && errors.email ? ' is-invalid' : ''
+                  }`}
               />
-              <ErrorMessage
-                name="email"
-                component="div"
-                className="text-danger mt-1"
-              />
+              <ErrorMessage name="email">
+                {msg => <div className="invalid-feedback">{msg}</div>}
+              </ErrorMessage>
             </div>
 
-            <div className="mb-3">
-              <label htmlFor="password" className="form-label">Password</label>
+            <div className="mb-3 position-relative">
+              <label htmlFor="password" className="form-label">
+                Password
+              </label>
               <Field
+                id="password"
                 name="password"
                 type="password"
-                className="form-control"
                 placeholder="******"
+                className={`form-control${touched.password && errors.password ? ' is-invalid' : ''
+                  }`}
               />
-              <ErrorMessage
-                name="password"
-                component="div"
-                className="text-danger mt-1"
-              />
+              <ErrorMessage name="password">
+                {msg => <div className="invalid-feedback">{msg}</div>}
+              </ErrorMessage>
             </div>
 
             <button
@@ -83,11 +94,8 @@ export default function LoginForm({ csrfToken }) {
               className="btn btn-primary w-100"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Loging In…' : 'Login'}
+              {isSubmitting ? 'Logging in…' : 'Login'}
             </button>
-            <div className='container'>
-
-            </div>
           </Form>
         )}
       </Formik>
