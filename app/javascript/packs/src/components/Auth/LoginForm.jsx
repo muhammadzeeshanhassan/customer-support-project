@@ -98,11 +98,11 @@ export default function LoginForm({ csrfToken }) {
 
             <div className="d-flex justify-content-between mt-3">
               <div className="d-flex justify-content-between mt-3">
-                <a href="/">Dashboard</a>
+                <a href="/">Home</a>
               </div>
 
               <div className="d-flex justify-content-between mt-3">
-                <a href="/users/sign_up">Dashboard</a>
+                <a href="/users/sign_up">Sign In</a>
               </div>
             </div>
           </Form>

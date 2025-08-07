@@ -72,7 +72,21 @@ class TicketsController < ApplicationController
 
   def set_ticket
     @ticket = Ticket.visible_to(current_user).find_by(id: params[:id])
-    head :not_found unless @ticket
+
+    unless @ticket
+      respond_to do |format|
+        format.html do
+          render file: Rails.root.join("public/404.html"),
+                 status: :not_found,
+                 layout: false
+        end
+        format.json do
+          render json: { error: "Not Found" },
+                 status: :not_found
+        end
+      end
+      nil
+    end
   end
 
   def ticket_params
