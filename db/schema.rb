@@ -10,18 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_01_043039) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_07_113053) do
   create_table "tickets", force: :cascade do |t|
-    t.string "subject"
-    t.text "description"
-    t.integer "status", default: 0
-    t.integer "priority"
+    t.string "subject", null: false
+    t.text "description", null: false
+    t.integer "status", default: 0, null: false
+    t.integer "priority", default: 0, null: false
     t.integer "customer_id", null: false
     t.integer "agent_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["agent_id"], name: "index_tickets_on_agent_id"
     t.index ["customer_id"], name: "index_tickets_on_customer_id"
+    t.check_constraint "LENGTH(description) BETWEEN 50 AND 300", name: "tickets_description_length"
+    t.check_constraint "LENGTH(subject) BETWEEN 15 AND 100", name: "tickets_subject_length"
   end
 
   create_table "users", force: :cascade do |t|
