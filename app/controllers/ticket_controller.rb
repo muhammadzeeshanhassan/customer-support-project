@@ -11,8 +11,7 @@ class TicketController < ApplicationController
     end
   end
 
-  def assign
-  end
+  def assign; end
 
   def index
     @tickets = if current_user.admin?
@@ -38,8 +37,7 @@ class TicketController < ApplicationController
     },  status: :ok
   end
 
-  def new
-  end
+  def new; end
 
   def create
     @ticket = current_user.tickets.build(ticket_params)
@@ -59,8 +57,7 @@ class TicketController < ApplicationController
     end
   end
 
-  def edit
-  end
+  def edit; end
 
   def update
     if @ticket.update(ticket_params)
