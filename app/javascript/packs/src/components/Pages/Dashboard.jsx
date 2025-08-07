@@ -1,13 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import axios from 'axios/dist/axios.min.js'
 
-
 function StatusBadge({ status }) {
-    const map = {
-        open: 'warning',
-        pending: 'info',
-        closed: 'success',
-    }
+    const map = { open: 'warning', pending: 'info', closed: 'success' }
     const variant = map[status] || 'secondary'
     return (
         <span className={`badge bg-${variant} text-capitalize me-2`}>
@@ -32,20 +27,11 @@ export default function Dashboard({ role, csrfToken, userName }) {
     const [page, setPage] = useState(1)
     const [meta, setMeta] = useState(null)
     const [menuOpen, setMenuOpen] = useState(false)
+    const menuRef = useRef(null)
     const perPage = 6
 
-    const handleLogout = async () => {
-        try {
-            await axios.delete('/users/sign_out', {
-                headers: { 'X-CSRF-Token': csrfToken },
-                withCredentials: true
-            })
-            window.location.href = '/users/sign_in'
-        } catch (err) {
-        }
-    }
-
     useEffect(() => {
+        setLoading(true)
         axios
             .get(`/tickets?page=${page}&per_page=${perPage}`, {
                 headers: { Accept: 'application/json' },
@@ -59,21 +45,50 @@ export default function Dashboard({ role, csrfToken, userName }) {
             .finally(() => setLoading(false))
     }, [role, page])
 
-    const counts = { open: 0, pending: 0, closed: 0 }
+    useEffect(() => {
+        function onClick(e) {
+            if (menuOpen && menuRef.current && !menuRef.current.contains(e.target)) {
+                setMenuOpen(false)
+            }
+        }
+        function onKey(e) {
+            if (e.key === 'Escape') setMenuOpen(false)
+        }
+        document.addEventListener('mousedown', onClick)
+        document.addEventListener('keydown', onKey)
+        return () => {
+            document.removeEventListener('mousedown', onClick)
+            document.removeEventListener('keydown', onKey)
+        }
+    }, [menuOpen])
 
-    tickets.forEach(t => {
-        if (t.status === 'open') counts.open += 1
-        else if (t.status === 'pending') counts.pending += 1
-        else if (t.status === 'closed') counts.closed += 1
-    })
+    const handleLogout = async () => {
+        try {
+            await axios.delete('/users/sign_out', {
+                headers: { 'X-CSRF-Token': csrfToken },
+                withCredentials: true
+            })
+            window.location.href = '/users/sign_in'
+        } catch (err) {
+            console.error(err)
+        }
+    }
+
+    const counts = tickets.reduce(
+        (acc, t) => {
+            acc[t.status] = (acc[t.status] || 0) + 1
+            return acc
+        },
+        { open: 0, pending: 0, closed: 0 }
+    )
 
     return (
-        <div className="container mt-2 mr-2 ml-2">
+        <div className="container mt-2">
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <h1>Dashboard</h1>
-                <div className="position-relative">
+                <div className="position-relative" ref={menuRef}>
                     <button
-                        onClick={() => setMenuOpen(open => !open)}
+                        onClick={() => setMenuOpen(o => !o)}
                         className="btn p-0 border-0 bg-transparent d-flex align-items-center"
                         aria-label="Profile menu"
                     >
@@ -92,10 +107,7 @@ export default function Dashboard({ role, csrfToken, userName }) {
                             style={{ position: 'absolute', right: 0, top: '100%', marginTop: '0.5rem' }}
                         >
                             <li>
-                                <button
-                                    className="dropdown-item"
-                                    onClick={handleLogout}
-                                >
+                                <button className="dropdown-item" onClick={handleLogout}>
                                     Sign out
                                 </button>
                             </li>
@@ -105,7 +117,7 @@ export default function Dashboard({ role, csrfToken, userName }) {
             </div>
 
             <div className="row mb-5">
-                {['open', 'pending', 'closed'].map((st) => (
+                {['open', 'pending', 'closed'].map(st => (
                     <div key={st} className="col-md-4 mb-3">
                         <div className="card text-center">
                             <div className="card-body">
@@ -123,7 +135,7 @@ export default function Dashboard({ role, csrfToken, userName }) {
                 <p>No tickets to display.</p>
             ) : (
                 <div className="row">
-                    {tickets.map((t) => (
+                    {tickets.map(t => (
                         <div key={t.id} className="col-md-4 mb-4">
                             <div className="card h-100">
                                 <div className="card-body d-flex flex-column">
@@ -136,44 +148,40 @@ export default function Dashboard({ role, csrfToken, userName }) {
                                         <PriorityBadge priority={t.priority} />
                                     </div>
                                     <div className="mt-auto">
-
-                                        <a
-                                            href={`/tickets/${t.id}`}
-                                            className="btn btn-sm btn-outline-primary me-2"
-                                        >
+                                        <a href={`/tickets/${t.id}`} className="btn btn-sm btn-outline-primary me-2">
                                             View
                                         </a>
-                                        {(role === 'agent' || (role === 'customer' && t.status === 'open')) && (
-                                            <a
-                                                href={`/tickets/${t.id}/edit`}
-                                                className="btn btn-sm btn-outline-secondary me-2"
-                                            >
-                                                Edit
-                                            </a>
+                                        {(role === 'agent' ||
+                                            (role === 'customer' && t.status === 'open')) && (
+                                                <a
+                                                    href={`/tickets/${t.id}/edit`}
+                                                    className="btn btn-sm btn-outline-secondary me-2"
+                                                >
+                                                    Edit
+                                                </a>
+                                            )}
+                                        {role === 'admin' && (
+                                            <>
+                                                <button
+                                                    onClick={async () => {
+                                                        if (!confirm('Delete this ticket?')) return
+                                                        await axios.delete(`/tickets/${t.id}`, {
+                                                            headers: { 'X-CSRF-Token': csrfToken }
+                                                        })
+                                                        setTickets(ts => ts.filter(x => x.id !== t.id))
+                                                    }}
+                                                    className="btn btn-sm btn-outline-danger me-2"
+                                                >
+                                                    Delete
+                                                </button>
+                                                <a
+                                                    href={`/tickets/${t.id}/assign`}
+                                                    className="btn btn-sm btn-dark"
+                                                >
+                                                    Assign
+                                                </a>
+                                            </>
                                         )}
-
-                                        {role == 'admin' && <button
-                                            onClick={async () => {
-                                                if (!confirm('Delete this ticket?')) return
-                                                await axios.delete(`/tickets/${t.id}`, {
-                                                    headers: { 'X-CSRF-Token': csrfToken }
-                                                })
-                                                setTickets(tickets.filter(x => x.id !== t.id))
-                                            }}
-                                            className="btn btn-sm btn-outline-danger"
-                                        >
-                                            Delete
-                                        </button>}
-
-                                        {role == "admin" && (
-                                            <a
-                                                href={`/tickets/${t.id}/assign`}
-                                                className="btn btn-sm btn-dark m-1"
-                                            >
-                                                Assign
-                                            </a>
-                                        )}
-
                                     </div>
                                 </div>
                             </div>
@@ -181,40 +189,39 @@ export default function Dashboard({ role, csrfToken, userName }) {
                     ))}
                 </div>
             )}
+
             {meta && (
                 <div className="d-flex justify-content-center my-3">
-                    {meta.total_pages > 1 ? (
-                        <>
-                            <button
-                                className="btn btn-outline-secondary me-2"
-                                disabled={meta.current_page <= 1}
-                                onClick={() => setPage(page - 1)}
-                            >
-                                Prev
-                            </button>
-                            <span className="align-self-center mx-2">
-                                Page {meta.current_page} of {meta.total_pages} - {" "} Showing {tickets.length} of {meta.total_count} tickets
-                            </span>
-                            <button
-                                className="btn btn-outline-secondary ms-2"
-                                disabled={meta.current_page >= meta.total_pages}
-                                onClick={() => setPage(page + 1)}
-                            >
-                                Next
-                            </button>
-                        </>
-                    ) : (
-                        <span className="align-self-center">
-                            Page {meta.current_page} of {meta.total_pages} - {" "}
-                            Showing {tickets.length} of {meta.total_count} tickets
-                        </span>
-                    )}
+                    <button
+                        className="btn btn-outline-secondary me-2"
+                        disabled={meta.current_page <= 1}
+                        onClick={() => setPage(page - 1)}
+                    >
+                        Prev
+                    </button>
+                    <span className="align-self-center mx-2">
+                        Page {meta.current_page} of {meta.total_pages} — showing {tickets.length} of{' '}
+                        {meta.total_count}
+                    </span>
+                    <button
+                        className="btn btn-outline-secondary ms-2"
+                        disabled={meta.current_page >= meta.total_pages}
+                        onClick={() => setPage(page + 1)}
+                    >
+                        Next
+                    </button>
                 </div>
             )}
-            <div className=" row justify-content-center">
+
+            <div className="d-flex justify-content-center gap-2">
                 {role === 'admin' && (
-                    <a href="/admin/users/new" className="btn btn-outline-secondary ml-2">
+                    <a href="/admin/users/new" className="btn btn-outline-secondary">
                         Add Admin / Agent
+                    </a>
+                )}
+                {role === 'customer' && (
+                    <a href="/tickets/new" className="btn btn-primary">
+                        Create Ticket
                     </a>
                 )}
             </div>
