@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios/dist/axios.min.js'
 import { Badge, Alert, Card, Spinner } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
 
 export default function ViewTicket({ id }) {
   const [ticket, setTicket] = useState(null)
@@ -57,7 +56,9 @@ export default function ViewTicket({ id }) {
         {ticket.agent && (
           <p><strong>Assigned to:</strong> {ticket.agent.name} ({ticket.agent.email})</p>
         )}
-        <Link to="/dashboard">Dashboard</Link>
+        <div className="d-flex justify-content-between mt-3">
+          <a href="/dashboard">Dashboard</a>
+        </div>
       </Card.Body>
     </Card>
   )

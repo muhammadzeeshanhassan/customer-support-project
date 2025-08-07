@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
-import { Link } from 'react-router-dom'
 import axios from 'axios/dist/axios.min.js'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
@@ -144,7 +143,7 @@ export default function EditTicketForm({ id, csrfToken, role }) {
                         </button>
 
                         <div className="d-flex justify-content-between mt-3">
-                            <Link to="/dashboard">Dashboard</Link>
+                            <a href="/dashboard">Dashboard</a>
                         </div>
                     </Form>
                 )}
