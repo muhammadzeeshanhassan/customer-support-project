@@ -86,7 +86,7 @@ class TicketsController < ApplicationController
   end
 
   def set_ticket
-    @ticket = Ticket.find(params[:id])
+    @ticket = Ticket.find_by(id: params[:id])
   end
 
   def ticket_params
