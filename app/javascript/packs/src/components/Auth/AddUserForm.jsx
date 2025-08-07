@@ -1,7 +1,6 @@
 import React from 'react'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import axios from 'axios/dist/axios.min.js'
-import { Link, useNavigate } from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
 export default function AddUserForm({ csrfToken }) {
@@ -44,7 +43,7 @@ export default function AddUserForm({ csrfToken }) {
                                 withCredentials: true
                             }
                         )
-                        navigate('/dashboard')
+                        window.location.href = '/dashboard'
                     } catch (err) {
                         const data = err.response?.data
                         if (data?.error) {
@@ -131,8 +130,12 @@ export default function AddUserForm({ csrfToken }) {
                         </button>
 
                         <div className="d-flex justify-content-between mt-3">
-                            <Link to="/">Home</Link>
-                            <Link to="/dashboard">Dashboard</Link>
+                            <div className="d-flex justify-content-between mt-3">
+                                <a href="/">Dashboard</a>
+                            </div>
+                            <div className="d-flex justify-content-between mt-3">
+                                <a href="/dashboard">Dashboard</a>
+                            </div>
                         </div>
                     </Form>
                 )}
