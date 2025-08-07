@@ -1,4 +1,4 @@
-class TicketController < ApplicationController
+class TicketsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_ticket, only: [ :show, :edit, :update, :destroy, :assign_ticket, :assign ]
   before_action :authorize_user!, only: [ :show, :edit, :update, :destroy ]

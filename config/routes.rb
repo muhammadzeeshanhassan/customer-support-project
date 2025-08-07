@@ -17,7 +17,7 @@ Rails.application.routes.draw do
     sessions:      "user/sessions"
   }
 
-  resources :tickets, controller: "ticket" do
+  resources :tickets do
     member do
       get :assign
       patch :assign_ticket
