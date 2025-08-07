@@ -2,6 +2,7 @@ class TicketsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_ticket, only: [ :show, :edit, :update, :destroy, :assign_ticket, :assign ]
   before_action :authorize_user!, only: [ :show, :edit, :update, :destroy ]
+
   def assign_ticket
     if @ticket.update(agent_id: params.dig(:ticket, :agent_id))
       TicketNotificationWorker.perform_async(@ticket.id, "assignment")
@@ -50,7 +51,6 @@ class TicketsController < ApplicationController
   end
 
   def show
-    # render json: @ticket, status: :ok
     respond_to do |format|
       format.html
       format.json { render json: @ticket, include: { customer: { only: [ :id, :name, :email ] }, agent:    { only: [ :id, :name, :email ] } } }

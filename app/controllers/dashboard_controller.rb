@@ -1,7 +1,6 @@
 class DashboardController < ApplicationController
   before_action :authenticate_user!
 
-
   def show
     @tickets = case current_user.role
     when "customer"
