@@ -1,6 +1,6 @@
-// app/javascript/src/components/Tickets/EditTicketForm.jsx
 import React, { useState, useEffect } from 'react'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
+import { Link } from 'react-router-dom'
 import axios from 'axios/dist/axios.min.js'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
@@ -24,12 +24,6 @@ export default function EditTicketForm({ id, csrfToken, role }) {
     return (
         <div className="container py-5" style={{ maxWidth: '600px' }}>
             <h2 className="mb-4">Edit Ticket #{ticket.id}</h2>
-            <div className="mb-4">
-                <a href="/" className="btn btn-secondary">
-                    Back to Home
-                </a>
-            </div>
-
             <Formik
                 initialValues={{
                     subject: ticket.subject,
@@ -39,7 +33,6 @@ export default function EditTicketForm({ id, csrfToken, role }) {
                 }}
                 validate={values => {
                     const errors = {}
-                    // Subject rules
                     if (!values.subject) {
                         errors.subject = 'Required'
                     } else if (values.subject.length < 15) {
@@ -47,7 +40,6 @@ export default function EditTicketForm({ id, csrfToken, role }) {
                     } else if (values.subject.length > 100) {
                         errors.subject = 'Subject must be fewer than 100 characters'
                     }
-                    // Description rules
                     if (!values.description) {
                         errors.description = 'Required'
                     } else if (values.description.length < 50) {
@@ -73,7 +65,6 @@ export default function EditTicketForm({ id, csrfToken, role }) {
                         window.location.href = '/dashboard'
                     } catch (err) {
                         const data = err.response?.data
-                        // general or field errors
                         if (data?.error) {
                             setErrors({ general: data.error })
                         } else if (Array.isArray(data?.errors)) {
@@ -98,7 +89,6 @@ export default function EditTicketForm({ id, csrfToken, role }) {
                             <div className="alert alert-danger">{errors.general}</div>
                         )}
 
-                        {/* Subject */}
                         <div className="mb-3 position-relative">
                             <label htmlFor="subject" className="form-label">Subject</label>
                             <Field
@@ -111,7 +101,6 @@ export default function EditTicketForm({ id, csrfToken, role }) {
                             </ErrorMessage>
                         </div>
 
-                        {/* Description */}
                         <div className="mb-3 position-relative">
                             <label htmlFor="description" className="form-label">Description</label>
                             <Field
@@ -126,7 +115,6 @@ export default function EditTicketForm({ id, csrfToken, role }) {
                             </ErrorMessage>
                         </div>
 
-                        {/* Priority */}
                         <div className="mb-3">
                             <label htmlFor="priority" className="form-label">Priority</label>
                             <Field as="select" id="priority" name="priority" className="form-select">
@@ -154,6 +142,10 @@ export default function EditTicketForm({ id, csrfToken, role }) {
                         >
                             {isSubmitting ? 'Updating…' : 'Update Ticket'}
                         </button>
+
+                        <div className="d-flex justify-content-between mt-3">
+                            <Link to="/dashboard">Dashboard</Link>
+                        </div>
                     </Form>
                 )}
             </Formik>

@@ -1,11 +1,10 @@
 require "rails_helper"
 
 RSpec.describe User, type: :model do
-
-  it {should define_enum_for(:role).with_values(admin: 0, agent: 1, customer: 2 )}
+  it { should define_enum_for(:role).with_values(admin: 0, agent: 1, customer: 2) }
 
   it { should have_many(:tickets).with_foreign_key(:customer_id).dependent(:destroy) }
-  it { should have_many(:assigned_tickets).class_name("Ticket").with_foreign_key(:agent_id)}
+  it { should have_many(:assigned_tickets).class_name("Ticket").with_foreign_key(:agent_id) }
 
   describe "validations" do
     it { should validate_presence_of(:email) }

@@ -2,9 +2,11 @@ import React from 'react'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import axios from 'axios/dist/axios.min.js'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import { useNavigate, Link } from 'react-router-dom'
 
 
 export default function LoginForm({ csrfToken }) {
+  const navigate = useNavigate()
   return (
     <div className="container mt-5 justify-center" style={{ maxWidth: '480px' }}>
       <h2 className="mb-4 text-center">Login To Your Account</h2>
@@ -34,7 +36,8 @@ export default function LoginForm({ csrfToken }) {
                 withCredentials: true
               }
             )
-            window.location.href = '/'
+            // navigate('/dashboard', { replace: true, reloadPage: true })
+            window.location.href = "/"
           } catch (err) {
             const response = err.response?.data
             const message =
@@ -95,7 +98,13 @@ export default function LoginForm({ csrfToken }) {
             >
               {isSubmitting ? 'Logging in…' : 'Login'}
             </button>
+
+            <div className="d-flex justify-content-between mt-3">
+              <Link to="/">Home</Link>
+              <Link to="/users/sign_up">Sign Up</Link>
+            </div>
           </Form>
+
         )}
       </Formik>
 
