@@ -48,7 +48,7 @@ export default function LoginForm({ csrfToken }) {
           }
         }}
       >
-        {({ isSubmitting, errors }) => (
+        {({ isSubmitting, errors, touched }) => (
           <Form noValidate>
             {errors.general && (
               <div className="alert alert-danger">{errors.general}</div>

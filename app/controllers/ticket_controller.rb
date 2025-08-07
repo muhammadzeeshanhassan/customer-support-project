@@ -1,13 +1,13 @@
 class TicketController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_ticket, only: [:show, :edit, :update, :destroy, :assign_ticket, :assign] 
-
+  before_action :set_ticket, only: [ :show, :edit, :update, :destroy, :assign_ticket, :assign ]
+  before_action :authorize_user!, only: [ :show, :edit, :update, :destroy ]
   def assign_ticket
     if @ticket.update(agent_id: params.dig(:ticket, :agent_id))
       TicketNotificationWorker.perform_async(@ticket.id, "assignment")
       render json: @ticket, status: :ok
     else
-      render json: {errors: @ticket.errors}, status: :unprocessable_entity
+      render json: { errors: @ticket.errors }, status: :unprocessable_entity
     end
   end
 
@@ -54,8 +54,8 @@ class TicketController < ApplicationController
   def show
     # render json: @ticket, status: :ok
     respond_to do |format|
-    format.html  
-    format.json { render json: @ticket, include: { customer: { only: [:id, :name, :email] }, agent:    { only: [:id, :name, :email] } } }
+      format.html
+      format.json { render json: @ticket, include: { customer: { only: [ :id, :name, :email ] }, agent:    { only: [ :id, :name, :email ] } } }
     end
   end
 
@@ -75,6 +75,18 @@ class TicketController < ApplicationController
   end
 
   private
+
+  def authorize_user!
+    allowed =
+      if current_user.agent?
+        @ticket.agent_id == current_user.id
+      else
+        @ticket.customer_id == current_user.id
+      end
+    allowed ||= current_user.admin?
+
+    head :not_found unless allowed
+  end
 
   def set_ticket
     @ticket = Ticket.find(params[:id])
