@@ -1,32 +1,12 @@
 class TicketsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_ticket, only: [ :show, :edit, :update, :destroy, :assign_ticket, :assign ]
-  before_action :authorize_user!, only: [ :show, :edit, :update, :destroy ]
-
-  def assign_ticket
-    if @ticket.update(agent_id: params.dig(:ticket, :agent_id))
-      TicketNotificationWorker.perform_async(@ticket.id, "assignment")
-      render json: @ticket, status: :ok
-    else
-      render json: { errors: @ticket.errors }, status: :unprocessable_entity
-    end
-  end
-
-  def assign; end
+  before_action :set_ticket, only: [ :show, :edit, :update, :destroy, :assign, :assign_ticket ]
 
   def index
-    @tickets = if current_user.admin?
-      Ticket.all
-    elsif current_user.agent?
-      current_user.assigned_tickets
-    else
-      current_user.tickets
-    end
-
-    page     = params.fetch(:page, 1).to_i
+    page = params.fetch(:page,    1).to_i
     per_page = params.fetch(:per_page, 10).to_i
 
-    tickets = @tickets.order(created_at: :desc).page(page).per(per_page)
+    tickets = Ticket.visible_to(current_user).order(created_at: :desc).page(page).per(per_page)
 
     render json: {
       tickets: tickets,
@@ -35,7 +15,19 @@ class TicketsController < ApplicationController
         total_pages:  tickets.total_pages,
         total_count:  tickets.total_count
       }
-    },  status: :ok
+    }, status: :ok
+  end
+
+  def show
+    respond_to do |format|
+      format.html
+      format.json do
+        render json: @ticket, include: {
+          customer: { only: [ :id, :name, :email ] },
+          agent:    { only: [ :id, :name, :email ] }
+        }
+      end
+    end
   end
 
   def new; end
@@ -47,13 +39,6 @@ class TicketsController < ApplicationController
       render json: @ticket, status: :created
     else
       render json: { errors: @ticket.errors }, status: :unprocessable_entity
-    end
-  end
-
-  def show
-    respond_to do |format|
-      format.html
-      format.json { render json: @ticket, include: { customer: { only: [ :id, :name, :email ] }, agent:    { only: [ :id, :name, :email ] } } }
     end
   end
 
@@ -69,24 +54,25 @@ class TicketsController < ApplicationController
 
   def destroy
     @ticket.destroy
+    head :no_content
+  end
+
+  def assign; end
+
+  def assign_ticket
+    if @ticket.update(agent_id: params.dig(:ticket, :agent_id))
+      TicketNotificationWorker.perform_async(@ticket.id, "assignment")
+      render json: @ticket, status: :ok
+    else
+      render json: { errors: @ticket.errors }, status: :unprocessable_entity
+    end
   end
 
   private
 
-  def authorize_user!
-    allowed =
-      if current_user.agent?
-        @ticket.agent_id == current_user.id
-      else
-        @ticket.customer_id == current_user.id
-      end
-    allowed ||= current_user.admin?
-
-    head :not_found unless allowed
-  end
-
   def set_ticket
-    @ticket = Ticket.find_by(id: params[:id])
+    @ticket = Ticket.visible_to(current_user).find_by(id: params[:id])
+    head :not_found unless @ticket
   end
 
   def ticket_params

@@ -8,6 +8,19 @@ class Ticket < ApplicationRecord
   validates :subject, presence: true, length: { minimum: 15, maximum: 100 }
   validates :description, presence: true, length: { minimum: 50, maximum: 300 }
 
+  scope :visible_to, ->(user) {
+    case user.role
+    when
+      "admin" then all
+    when
+      "agent" then where(agent_id: user.id)
+    when
+      "customer" then where(customer_id: user.id)
+    else
+      none
+    end
+  }
+
   after_update :notify_customer_of_status_change
 
   private
